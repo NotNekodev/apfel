@@ -48,9 +48,10 @@ object Main {
         val camera = Camera(Vector3f(0f, 0f, 3f))
         val projection = Projection(Math.toRadians(70.0).toFloat(), 800f / 600f, 0.1f, 100f)
 
-        val windexTextureAsset = assets.register(TextureAsset("windex", "textures/windex.png", lazyLoad = true))
-        windexTextureAsset.load()
-        val windexTexture = windexTextureAsset.texture!!
+        val teapotTextureAsset = assets.register(TextureAsset("tp_tex", "textures/default.png", lazyLoad = true))
+        teapotTextureAsset.load()
+        val teapotTexture = teapotTextureAsset.texture!!
+
 
         val teapotModelAsset = assets.register(ObjModelAsset("teapot", "models/teapot.obj", lazyLoad = false))
         teapotModelAsset.load()
@@ -60,12 +61,12 @@ object Main {
         cube.setPosition(0f, 0f, -3f)
             .setRotation(0f, 0f, 0f)
             .setScale(2f, 2f, 2f)
-            .setTexture(windexTexture)
 
         camera.lookAt(cube.position)
 
         teapotModel.setPosition(3f, 0f, -3f)
-            .setScale(1f, 1f, 1f)
+            .setScale(0.01f, 0.01f, 0.01f) // for some reason, the model is MASSIVE
+            .setTexture(teapotTexture)
 
         var lastFrame = 0.0
         var deltaTime: Float
@@ -79,6 +80,8 @@ object Main {
             val currentFrame = GLFW.glfwGetTime()
             deltaTime = (currentFrame - lastFrame).toFloat()
             lastFrame = currentFrame
+
+            cube.setRotation(cube.rotation.x, cube.rotation.y + 1f, cube.rotation.z)
 
             shaderManager.checkForReloads()
 
@@ -96,6 +99,10 @@ object Main {
             glClearColor(0f, 0f, 0f, 1f)
 
             shader.use()
+            shader.setVec3("lightPos", Vector3f(2f, 2f, 2f))
+            shader.setVec3("viewPos", camera.position)
+            shader.setVec3("lightColor", Vector3f(1f, 1f, 1f))
+            shader.setBool("enableLighting", true)
             shader.setBool("hasTexture", cube.texture != null)
             shader.setMat4("model", cube.getModelMatrix())
             camera.uploadView(shader)
@@ -103,6 +110,10 @@ object Main {
             cube.render()
 
             shader.use()
+            shader.setVec3("lightPos", Vector3f(2f, 2f, 2f))
+            shader.setVec3("viewPos", camera.position)
+            shader.setVec3("lightColor", Vector3f(1f, 1f, 1f))
+            shader.setBool("enableLighting", true)
             shader.setBool("hasTexture", teapotModel.texture != null)
             shader.setMat4("model", teapotModel.getModelMatrix())
             camera.uploadView(shader)

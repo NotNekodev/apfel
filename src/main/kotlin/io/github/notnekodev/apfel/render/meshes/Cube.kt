@@ -13,6 +13,7 @@ class Cube : Mesh {
     private val cbo: Int
     private val ebo: Int
     private val tbo: Int
+    private val nbo: Int
     override val vertexCount: Int
 
     override var position = Vector3f(0f, 0f, 0f)
@@ -58,7 +59,7 @@ class Cube : Mesh {
         )
         vertexCount = indices.size
 
-        val colors = FloatArray(24 * 3) { 1f } // All white vertices
+        val colors = FloatArray(24 * 3) { 1f }
 
         val texCoords = floatArrayOf(
             0f, 0f,  1f, 0f,  1f, 1f,  0f, 1f,
@@ -67,6 +68,33 @@ class Cube : Mesh {
             0f, 0f,  1f, 0f,  1f, 1f,  0f, 1f,
             0f, 0f,  1f, 0f,  1f, 1f,  0f, 1f,
             0f, 0f,  1f, 0f,  1f, 1f,  0f, 1f
+        )
+
+        val normals = floatArrayOf(
+            0f,  0f,  1f,
+            0f,  0f,  1f,
+            0f,  0f,  1f,
+            0f,  0f,  1f,
+            0f,  0f, -1f,
+            0f,  0f, -1f,
+            0f,  0f, -1f,
+            0f,  0f, -1f,
+            -1f,  0f,  0f,
+            -1f,  0f,  0f,
+            -1f,  0f,  0f,
+            -1f,  0f,  0f,
+            1f,  0f,  0f,
+            1f,  0f,  0f,
+            1f,  0f,  0f,
+            1f,  0f,  0f,
+            0f,  1f,  0f,
+            0f,  1f,  0f,
+            0f,  1f,  0f,
+            0f,  1f,  0f,
+            0f, -1f,  0f,
+            0f, -1f,  0f,
+            0f, -1f,  0f,
+            0f, -1f,  0f
         )
 
         glBindVertexArray(vao)
@@ -88,6 +116,12 @@ class Cube : Mesh {
         glBufferData(GL_ARRAY_BUFFER, texCoords, GL_STATIC_DRAW)
         glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0)
         glEnableVertexAttribArray(2)
+
+        nbo = glGenBuffers()
+        glBindBuffer(GL_ARRAY_BUFFER, nbo)
+        glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW)
+        glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0)
+        glEnableVertexAttribArray(3)
 
         ebo = glGenBuffers()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
@@ -115,5 +149,6 @@ class Cube : Mesh {
         glDeleteBuffers(cbo)
         glDeleteBuffers(ebo)
         glDeleteBuffers(tbo)
+        glDeleteBuffers(nbo)
     }
 }

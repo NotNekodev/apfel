@@ -15,6 +15,7 @@ class ObjModel(input: InputStream) : Mesh {
     private val cbo: Int
     private val ebo: Int
     private val tbo: Int
+    private val nbo: Int
     override var vertexCount: Int
 
     override var position = Vector3f(0f, 0f, 0f)
@@ -24,15 +25,15 @@ class ObjModel(input: InputStream) : Mesh {
     override var texture: Texture? = null
 
     init {
-        var obj = ObjUtils.convertToRenderable(ObjReader.read(input))
+        val obj = ObjUtils.convertToRenderable(ObjReader.read(input))
 
         val indices = ObjData.getFaceVertexIndices(obj)
-        vertexCount = indices.limit() // Changed: use index count, not vertex count
+        vertexCount = indices.limit()
 
         val vertices = ObjData.getVertices(obj)
-        val colors = FloatArray((vertices.limit() / 3) * 3) {1f} // Fixed color array size
-
+        val colors = FloatArray((vertices.limit() / 3) * 3) { 1f }
         val texCoords = ObjData.getTexCoords(obj, 2)
+        val normals = ObjData.getNormals(obj)  // Add this
 
         glBindVertexArray(vao)
 
@@ -53,6 +54,12 @@ class ObjModel(input: InputStream) : Mesh {
         glBufferData(GL_ARRAY_BUFFER, texCoords, GL_STATIC_DRAW)
         glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0)
         glEnableVertexAttribArray(2)
+
+        nbo = glGenBuffers()
+        glBindBuffer(GL_ARRAY_BUFFER, nbo)
+        glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW)
+        glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0)
+        glEnableVertexAttribArray(3)
 
         ebo = glGenBuffers()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
@@ -80,5 +87,6 @@ class ObjModel(input: InputStream) : Mesh {
         glDeleteBuffers(cbo)
         glDeleteBuffers(ebo)
         glDeleteBuffers(tbo)
+        glDeleteBuffers(nbo)
     }
 }
