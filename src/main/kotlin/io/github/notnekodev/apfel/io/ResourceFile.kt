@@ -4,7 +4,6 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
-@Suppress("unused")
 object ResourceFile {
     fun get(path: String): File {
         val cleanPath = path.removePrefix("/")

@@ -1,6 +1,7 @@
 package io.github.notnekodev.apfel
 
 import io.github.notnekodev.apfel.assets.AssetManager
+import io.github.notnekodev.apfel.assets.types.ObjModelAsset
 import io.github.notnekodev.apfel.assets.types.TextureAsset
 import io.github.notnekodev.apfel.input.InputManager
 import io.github.notnekodev.apfel.input.Keybind
@@ -51,6 +52,10 @@ object Main {
         windexTextureAsset.load()
         val windexTexture = windexTextureAsset.texture!!
 
+        val teapotModelAsset = assets.register(ObjModelAsset("teapot", "models/teapot.obj", lazyLoad = false))
+        teapotModelAsset.load()
+        val teapotModel = teapotModelAsset.model!!
+
         val cube = Cube()
         cube.setPosition(0f, 0f, -3f)
             .setRotation(0f, 0f, 0f)
@@ -59,10 +64,8 @@ object Main {
 
         camera.lookAt(cube.position)
 
-        val cube2 = Cube()
-        cube2.setPosition(3f, 0f, -3f)
+        teapotModel.setPosition(3f, 0f, -3f)
             .setScale(1f, 1f, 1f)
-            .setTexture(windexTexture)
 
         var lastFrame = 0.0
         var deltaTime: Float
@@ -100,11 +103,11 @@ object Main {
             cube.render()
 
             shader.use()
-            shader.setBool("hasTexture", cube2.texture != null)
-            shader.setMat4("model", cube2.getModelMatrix())
+            shader.setBool("hasTexture", teapotModel.texture != null)
+            shader.setMat4("model", teapotModel.getModelMatrix())
             camera.uploadView(shader)
             projection.uploadProjection(shader)
-            cube2.render()
+            teapotModel.render()
 
             window.swap()
             window.poll()
@@ -112,7 +115,7 @@ object Main {
         }
 
         cube.delete()
-        cube2.delete()
+        teapotModel.delete()
         shaderManager.cleanup()
     }
 }
