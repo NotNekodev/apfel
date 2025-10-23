@@ -7,7 +7,7 @@ repositories {
     mavenCentral()
 }
 
-val lwjglVersion = "3.3.3"
+val lwjglVersion = "3.3.6"
 
 val lwjglNatives = when (org.gradle.internal.os.OperatingSystem.current()) {
     org.gradle.internal.os.OperatingSystem.WINDOWS -> "natives-windows"
@@ -22,10 +22,12 @@ dependencies {
     implementation("org.lwjgl:lwjgl:$lwjglVersion")
     implementation("org.lwjgl:lwjgl-glfw:$lwjglVersion")
     implementation("org.lwjgl:lwjgl-opengl:$lwjglVersion")
+    implementation("org.lwjgl:lwjgl-stb:$lwjglVersion")
 
     runtimeOnly("org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives")
     runtimeOnly("org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives")
     runtimeOnly("org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives")
+    runtimeOnly("org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives")
 
     implementation("org.joml:joml:1.10.7")
 }

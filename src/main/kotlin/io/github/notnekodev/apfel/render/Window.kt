@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryUtil.NULL
 
+@Suppress("unused")
 class Window(width: Int, height: Int, title: String) {
     var handle: Long
 

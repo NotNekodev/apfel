@@ -1,5 +1,6 @@
 package io.github.notnekodev.apfel.render
 
+import io.github.notnekodev.apfel.render.texture.Texture
 import org.joml.Matrix4f
 import org.joml.Vector3f
 import org.lwjgl.opengl.GL30.*
@@ -12,6 +13,7 @@ interface Mesh {
     var position: Vector3f
     var rotation: Vector3f
     var scale: Vector3f
+    var texture: Texture?
 
     fun getModelMatrix(): Matrix4f {
         return Matrix4f()
@@ -24,7 +26,13 @@ interface Mesh {
             .scale(scale)
     }
 
+    fun setTexture(tex: Texture): Mesh {
+        texture = tex
+        return this
+    }
+
     fun render() {
+        texture?.bind(0)
         glBindVertexArray(vao)
         glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0)
     }

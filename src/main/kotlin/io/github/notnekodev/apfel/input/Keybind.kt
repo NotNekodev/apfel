@@ -14,6 +14,7 @@ data class Keybind(
         key = defaultKey.copy()
     }
 
+    @Suppress("unused")
     companion object {
         fun forward() = Keybind("forward", GLFW.GLFW_KEY_W)
         fun backward() = Keybind("backward", GLFW.GLFW_KEY_S)

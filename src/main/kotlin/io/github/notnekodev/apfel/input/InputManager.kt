@@ -3,12 +3,12 @@ package io.github.notnekodev.apfel.input
 import io.github.notnekodev.apfel.render.Window
 import org.lwjgl.glfw.GLFW
 
+@Suppress("unused")
 class InputManager(private val window: Window) {
     private val keybindings = mutableMapOf<String, Keybind>()
     private val keyStates = mutableMapOf<Int, KeyState>()
     private var currentModifiers = 0
 
-    // Mouse state
     var mouseX = 0.0
         private set
     var mouseY = 0.0
@@ -70,7 +70,6 @@ class InputManager(private val window: Window) {
                 lastMouseX = xpos
                 lastMouseY = ypos
                 firstMouse = false
-                // Don't calculate delta on first mouse movement
                 mouseDeltaX = 0f
                 mouseDeltaY = 0f
                 return@glfwSetCursorPosCallback
@@ -83,7 +82,6 @@ class InputManager(private val window: Window) {
             lastMouseY = ypos
         }
 
-        // Reset firstMouse when window gains focus to prevent jumps
         GLFW.glfwSetWindowFocusCallback(window.handle) { _, focused ->
             if (focused && mouseLocked) {
                 firstMouse = true
@@ -91,44 +89,37 @@ class InputManager(private val window: Window) {
         }
     }
 
-    // Register a keybinding
     fun register(keybinding: Keybind) {
         keybindings[keybinding.name] = keybinding
     }
 
-    // Register multiple keybindings
     fun register(vararg keybindings: Keybind) {
         keybindings.forEach { register(it) }
     }
 
-    // Check if modifiers match
     private fun modifiersMatch(required: Int): Boolean {
         if (required == 0) return true
         return (currentModifiers and required) == required
     }
 
-    // Check if a keybinding is currently held down
     fun isDown(bindingName: String): Boolean {
         val binding = keybindings[bindingName] ?: return false
         val keyPressed = keyStates[binding.key.keyCode]?.pressed ?: false
         return keyPressed && modifiersMatch(binding.key.modifiers)
     }
 
-    // Check if a keybinding was just pressed this frame
     fun isPressed(bindingName: String): Boolean {
         val binding = keybindings[bindingName] ?: return false
         val keyJustPressed = keyStates[binding.key.keyCode]?.justPressed ?: false
         return keyJustPressed && modifiersMatch(binding.key.modifiers)
     }
 
-    // Check if a keybinding was just released this frame
     fun isReleased(bindingName: String): Boolean {
         val binding = keybindings[bindingName] ?: return false
         val keyJustReleased = keyStates[binding.key.keyCode]?.justReleased ?: false
         return keyJustReleased && modifiersMatch(binding.key.modifiers)
     }
 
-    // Direct key code check (for non-bound keys)
     fun isKeyDown(keyCode: Int): Boolean {
         return keyStates[keyCode]?.pressed ?: false
     }
@@ -141,7 +132,6 @@ class InputManager(private val window: Window) {
         return keyStates[keyCode]?.justReleased ?: false
     }
 
-    // Check with modifiers
     fun isKeyDown(key: Key): Boolean {
         val keyPressed = keyStates[key.keyCode]?.pressed ?: false
         return keyPressed && modifiersMatch(key.modifiers)
@@ -152,44 +142,35 @@ class InputManager(private val window: Window) {
         return keyJustPressed && modifiersMatch(key.modifiers)
     }
 
-    // Get keybinding by name
     fun getBinding(name: String): Keybind? = keybindings[name]
 
-    // Rebind a key
     fun rebind(bindingName: String, newKey: Key): Boolean {
         val binding = keybindings[bindingName] ?: return false
         binding.key = newKey
         return true
     }
 
-    // Convenience rebind without modifiers
     fun rebind(bindingName: String, newKeyCode: Int): Boolean {
         return rebind(bindingName, Key(newKeyCode, 0))
     }
 
-    // Reset all keybindings to defaults
     fun resetAllBindings() {
         keybindings.values.forEach { it.reset() }
     }
 
-    // Call this at the end of each frame
     fun update() {
-        // Clear "just pressed" and "just released" states
         keyStates.values.forEach {
             it.justPressed = false
             it.justReleased = false
         }
     }
 
-    // Call this after consuming mouse delta (e.g., after camera.processMouseMovement)
     fun resetMouseDelta() {
         mouseDeltaX = 0f
         mouseDeltaY = 0f
     }
 
-    // Get all registered keybindings
     fun getAllBindings(): Map<String, Keybind> = keybindings.toMap()
 
-    // Get current modifiers (useful for debugging or UI)
     fun getCurrentModifiers(): Int = currentModifiers
 }

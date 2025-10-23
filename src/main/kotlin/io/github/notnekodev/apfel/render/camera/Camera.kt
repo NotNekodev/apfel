@@ -56,7 +56,6 @@ class Camera(
         yaw += smoothX * mouseSensitivity
         pitch += smoothY * mouseSensitivity
 
-        // Clamp pitch
         pitch = pitch.coerceIn(-89f, 89f)
 
         updateVectors()
@@ -65,7 +64,6 @@ class Camera(
     fun processKeyboard(direction: String, deltaTime: Float) {
         val velocity = movementSpeed * deltaTime
 
-        // Move relative to horizontal plane (yaw only)
         val horizontalFront = Vector3f(front.x, 0f, front.z).normalize()
         val horizontalRight = Vector3f(right.x, 0f, right.z).normalize()
 

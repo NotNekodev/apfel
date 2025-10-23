@@ -4,6 +4,7 @@ import org.joml.Matrix4f
 import org.joml.Vector3f
 import org.lwjgl.opengl.GL20.*
 
+@Suppress("unused")
 class Shader(val program: Int) {
     private val uniformCache = mutableMapOf<String, Int>()
 
@@ -17,7 +18,6 @@ class Shader(val program: Int) {
         }
     }
 
-    // Set uniforms
     fun setInt(name: String, value: Int) {
         glUniform1i(getUniformLocation(name), value)
     }

@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL20.*
 import java.io.File
 import java.nio.file.*
 
+@Suppress("unused")
 class ShaderManager {
     private val shaders = mutableMapOf<String, Shader>()
     private val watchService: WatchService = FileSystems.getDefault().newWatchService()
@@ -19,7 +20,6 @@ class ShaderManager {
 
     fun loadShader(name: String, vertexPath: String, fragmentPath: String, useResources: Boolean = true): io.github.notnekodev.apfel.render.Shader {
         if (useResources) {
-            // Load from resources (no hot reload)
             val vertFile = ResourceFile.get(vertexPath)
             val fragFile = ResourceFile.get(fragmentPath)
 
@@ -31,7 +31,6 @@ class ShaderManager {
             println("Loaded shader '$name' from resources (ID: $program) - hot reload disabled")
             return shader
         } else {
-            // Load from file system (with hot reload)
             val vertFile = File(vertexPath)
             val fragFile = File(fragmentPath)
 
@@ -41,7 +40,7 @@ class ShaderManager {
 
             val program = compileAndLinkShader(vertFile, fragFile)
             val lastModified = maxOf(vertFile.lastModified(), fragFile.lastModified())
-            val shader = io.github.notnekodev.apfel.render.Shader(program)
+            val shader = Shader(program)
 
             shaders[name] = Shader(shader, vertFile.absolutePath, fragFile.absolutePath, lastModified)
 
@@ -56,7 +55,7 @@ class ShaderManager {
 
     fun loadShaderFromSource(name: String, vertexSource: String, fragmentSource: String): io.github.notnekodev.apfel.render.Shader {
         val program = compileAndLinkShaderFromSource(vertexSource, fragmentSource)
-        val shader = io.github.notnekodev.apfel.render.Shader(program)
+        val shader = Shader(program)
         println("Loaded shader '$name' from source (ID: $program)")
         return shader
     }
@@ -83,7 +82,6 @@ class ShaderManager {
             val filename = event.context() as Path
             val fullPath = dir.resolve(filename)
 
-            // Check if this file is used by any shader
             shaders.forEach { (name, shader) ->
                 val vertFile = File(shader.vertexPath)
                 val fragFile = File(shader.fragmentPath)
@@ -107,7 +105,7 @@ class ShaderManager {
             val fragFile = File(shader.fragmentPath)
             val newProgram = compileAndLinkShader(vertFile, fragFile)
             shader.shaderWrapper.delete()
-            shader.shaderWrapper = io.github.notnekodev.apfel.render.Shader(newProgram)
+            shader.shaderWrapper = Shader(newProgram)
             shader.lastModified = maxOf(vertFile.lastModified(), fragFile.lastModified())
             println("Successfully reloaded shader '$name' (new ID: $newProgram)")
         } catch (e: Exception) {
